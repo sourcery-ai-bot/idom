@@ -1,2 +1,5 @@
 node_modules
 web_modules
+
+# managed by idom
+.package.current.json

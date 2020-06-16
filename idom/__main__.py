@@ -2,7 +2,13 @@ import sys
 import argparse
 from typing import TypeVar, Callable, Any, DefaultDict, Dict
 
-from idom.client.manage import install, delete_web_modules, installed, restore
+from idom.client.manage import (
+    install,
+    delete_web_modules,
+    installed,
+    restore,
+    install_python_package_dependencies,
+)
 
 
 _Func = TypeVar("_Func", bound=Callable[..., Any])
@@ -11,7 +17,7 @@ _Func = TypeVar("_Func", bound=Callable[..., Any])
 def main(*args: str) -> None:
     cli = argparse.ArgumentParser()
     cli.add_argument(
-        "command", choices=["install", "uninstall", "installed", "restore"]
+        "command", choices=["install", "uninstall", "installed", "restore", "register"]
     )
     cli.add_argument(
         "dependencies", nargs="*", type=str,
@@ -34,7 +40,7 @@ def main(*args: str) -> None:
 
 
 ARG_REQUIREMENTS: Dict[str, Dict[str, Any]] = {
-    "installed restore uninstall": {"exports": None, "force": False},
+    "installed restore uninstall register": {"exports": None, "force": False},
     "installed restore": {"dependencies": []},
 }
 
@@ -57,6 +63,8 @@ def run(args: argparse.Namespace) -> None:
         delete_web_modules(args.dependencies)
     elif args.command == "restore":
         restore()
+    elif args.command == "register":
+        install_python_package_dependencies(args.dependencies)
     else:
         print("Installed:")
         for name in installed():
